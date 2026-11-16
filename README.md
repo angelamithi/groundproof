@@ -12,4 +12,3 @@ server/      Backend: indexer, fraud checks, REST API, MCP server for AI agents,
 
 Getting started: `npm install` at the root (npm workspaces), then follow the README in each
 folder. Order: publish `contracts/`, deploy `server/` (Render Blueprint in `render.yaml`), then deploy `app/` (Vercel, root directory `app`).
-# groundproof

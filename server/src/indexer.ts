@@ -1,5 +1,6 @@
 import { getMyClaim, getTask } from '../../app/lib/chain.ts';
 import { PACKAGE_ID } from '../../app/lib/config.ts';
+import { eventsClient } from '../../app/lib/events.ts';
 import type { Claim, Task } from '../../app/lib/types.ts';
 import { db, getMeta, setMeta } from './db.ts';
 import { assess } from './fraud.ts';
@@ -90,7 +91,7 @@ export async function pollOnce(): Promise<number> {
   let cursor = getMeta(CURSOR_KEY);
   let processed = 0;
   for (;;) {
-    const page = await client.core.listEvents({
+    const page = await eventsClient(client).core.listEvents({
       filter: { eventType: `${PACKAGE_ID}::task` },
       order: 'ascending',
       limit: 50,

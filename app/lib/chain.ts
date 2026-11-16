@@ -1,6 +1,7 @@
 import { bcs } from '@mysten/sui/bcs';
 import type { ClientWithCoreApi } from '@mysten/sui/client';
 import { COIN_TYPE, CONFIG_ID, PACKAGE_ID, REGISTRY_ID } from './config';
+import { eventsClient } from './events';
 import {
   ConfigBcs,
   ClaimBcs,
@@ -50,7 +51,7 @@ export async function getTask(client: ClientWithCoreApi, id: string): Promise<Ta
 
 /** Recently created tasks that still have open slots and haven't expired. */
 export async function listOpenTasks(client: ClientWithCoreApi): Promise<Task[]> {
-  const { events } = await client.core.listEvents({
+  const { events } = await eventsClient(client).core.listEvents({
     filter: { eventType: `${PACKAGE_ID}::task::TaskCreated` },
     order: 'descending',
     limit: 50,
@@ -157,7 +158,7 @@ export async function listMyTasks(client: ClientWithCoreApi, requester: string):
   const ids: string[] = [];
   let before: string | null = null;
   for (let page = 0; page < 5; page++) {
-    const res = await client.core.listEvents({
+    const res = await eventsClient(client).core.listEvents({
       filter: { eventType: `${PACKAGE_ID}::task::TaskCreated` },
       order: 'descending',
       limit: 50,
