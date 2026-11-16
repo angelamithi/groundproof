@@ -1,0 +1,9 @@
+{
+  "name": "Groundproof",
+  "short_name": "Groundproof",
+  "description": "Get paid to verify the real world around you.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#fafaf8",
+  "theme_color": "#0f5132"
+}

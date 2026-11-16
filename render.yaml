@@ -1,0 +1,51 @@
+# Render Blueprint for the Groundproof server.
+# In Render: New -> Blueprint -> pick this repo. Render reads this file and asks
+# you for every value marked `sync: false` (keep secrets out of Git).
+# The app (app/) is deployed separately on Vercel.
+services:
+  - type: web
+    name: groundproof-server
+    runtime: node
+    plan: starter            # change to "free" for a quick test (no disk: data is lost on restart)
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /health
+    disk:                    # remove this block if you use plan: free
+      name: groundproof-data
+      mountPath: /data
+      sizeGB: 1
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+      - key: DB_PATH
+        value: /data/groundproof.db   # use ./groundproof.db on the free plan
+      - key: NEXT_PUBLIC_SUI_NETWORK
+        value: testnet
+      - key: NEXT_PUBLIC_COIN_TYPE
+        value: 0xa1ec7fc00a6f40db9693ad1415d0c193ad3906494428cf252621037bd7117e29::usdc::USDC
+      - key: NEXT_PUBLIC_COIN_DECIMALS
+        value: "6"
+      - key: NEXT_PUBLIC_COIN_SYMBOL
+        value: USDC
+      - key: NEXT_PUBLIC_SEAL_KEY_SERVERS
+        value: 0x73d05d62c18d9374e3ea529e8e0ed6161da1a141a94d3f76ae3fe4e99356db75,0xf5d14a81a982144ae441cd7d64b09027f116a468bd36e7eca494f750591623c8
+      - key: NEXT_PUBLIC_WALRUS_PUBLISHER
+        value: https://publisher.walrus-testnet.walrus.space
+      - key: NEXT_PUBLIC_WALRUS_AGGREGATOR
+        value: https://aggregator.walrus-testnet.walrus.space
+      - key: NEXT_PUBLIC_PACKAGE_ID
+        sync: false
+      - key: NEXT_PUBLIC_CONFIG_ID
+        sync: false
+      - key: NEXT_PUBLIC_REGISTRY_ID
+        sync: false
+      - key: OPERATOR_PRIVATE_KEY
+        sync: false
+      - key: ENOKI_PRIVATE_KEY
+        sync: false
+      - key: PUBLIC_URL
+        sync: false
+      - key: MASTER_KEY
+        sync: false             # paste the output of: openssl rand -hex 32  (and back it up)
+      - key: ADMIN_TOKEN
+        generateValue: true     # find it later under the service's Environment tab
