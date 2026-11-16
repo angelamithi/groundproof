@@ -3,6 +3,8 @@ import { NETWORK } from '@/lib/config';
 import { enoki } from '@/lib/enoki-server';
 import { sponsoredTargets } from '@/lib/tx';
 
+const SUI_ADDRESS = /^0x[0-9a-fA-F]{64}$/;
+
 /**
  * Ask Enoki to pay gas for a worker's transaction. Only Groundproof's own
  * worker functions are allowed, so the sponsor budget can't be drained.
@@ -10,10 +12,15 @@ import { sponsoredTargets } from '@/lib/tx';
  */
 export async function POST(req: Request) {
   try {
-    const { transactionKindBytes, sender } = (await req.json()) as {
+    const { transactionKindBytes, sender, recipient } = (await req.json()) as {
       transactionKindBytes?: string;
       sender?: string;
+      /** Only for withdrawals: the outside address the funds go to. */
+      recipient?: string;
     };
+    if (recipient !== undefined && !SUI_ADDRESS.test(recipient)) {
+      return NextResponse.json({ error: 'recipient must be a full 0x… Sui address' }, { status: 400 });
+    }
     if (!transactionKindBytes || !sender) {
       return NextResponse.json({ error: 'transactionKindBytes and sender are required' }, { status: 400 });
     }
@@ -25,7 +32,7 @@ export async function POST(req: Request) {
       transactionKindBytes,
       sender,
       allowedMoveCallTargets: sponsoredTargets(),
-      allowedAddresses: [sender],
+      allowedAddresses: recipient ? [sender, recipient] : [sender],
     });
     return NextResponse.json({ bytes: sponsored.bytes, digest: sponsored.digest });
   } catch (e) {

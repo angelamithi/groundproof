@@ -4,6 +4,7 @@ import { useCurrentAccount, useCurrentClient } from '@mysten/dapp-kit-react';
 import { useQuery } from '@tanstack/react-query';
 import { formatAmount } from '@/components/format';
 import { SignIn } from '@/components/SignIn';
+import { Withdraw } from '@/components/Withdraw';
 import { getEarningsBalance } from '@/lib/chain';
 import { useWorkerStats } from '@/lib/hooks';
 import { useT } from '@/lib/i18n';
@@ -44,6 +45,7 @@ export default function WalletPage() {
           </div>
         </div>
       )}
+      {balance.data !== undefined && <Withdraw balance={balance.data} />}
       <p className="muted small">{t('cashOut')}</p>
     </section>
   );

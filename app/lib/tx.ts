@@ -93,6 +93,7 @@ export function sponsoredTargets(): string[] {
     `${PACKAGE_ID}::task::dispute`,
     `${PACKAGE_ID}::task::finalize_rejection`,
     `${PACKAGE_ID}::task::expire_claim`,
+    ...FRAMEWORK_PAYMENT_TARGETS,
   ];
 }
 
@@ -199,3 +200,27 @@ export function expireClaimTx(taskId: string, coinType: string, worker: string):
   });
   return tx;
 }
+
+// === Withdraw ===
+
+/** Send stablecoin from the signed-in wallet to an outside address (e.g. an exchange deposit address). */
+export function withdrawTx(coinType: string, amount: bigint, recipient: string): Transaction {
+  const tx = new Transaction();
+  const coin = coinWithBalance({ type: coinType, balance: amount, useGasCoin: false });
+  tx.transferObjects([coin], tx.pure.address(recipient));
+  return tx;
+}
+
+/**
+ * Sui framework functions the SDK uses to pay from a wallet's balance
+ * (coins or address balances). Sponsored payments need these allowed too.
+ */
+export const FRAMEWORK_PAYMENT_TARGETS = [
+  '0x2::coin::redeem_funds',
+  '0x2::balance::redeem_funds',
+  '0x2::coin::zero',
+  '0x2::balance::zero',
+  '0x2::coin::into_balance',
+  '0x2::coin::send_funds',
+  '0x2::coin::destroy_zero',
+];

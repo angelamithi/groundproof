@@ -16,6 +16,7 @@ export async function executeSponsored(
   tx: Transaction,
   sender: string,
   sign: Signer,
+  recipient?: string,
 ): Promise<string> {
   // The sender is needed to resolve stablecoin payments (coinWithBalance).
   tx.setSenderIfNotSet(sender);
@@ -24,7 +25,7 @@ export async function executeSponsored(
   const sponsorRes = await fetch('/api/sponsor', {
     method: 'POST',
     headers: { 'content-type': 'application/json' },
-    body: JSON.stringify({ transactionKindBytes: toBase64(kindBytes), sender }),
+    body: JSON.stringify({ transactionKindBytes: toBase64(kindBytes), sender, recipient }),
   });
   if (!sponsorRes.ok) throw new Error(`Sponsor failed: ${await sponsorRes.text()}`);
   const { bytes, digest } = (await sponsorRes.json()) as { bytes: string; digest: string };

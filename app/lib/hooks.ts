@@ -16,7 +16,7 @@ export function useSponsoredExecute() {
   const queryClient = useQueryClient();
 
   return useCallback(
-    async (tx: Transaction) => {
+    async (tx: Transaction, opts?: { recipient?: string }) => {
       if (!account) throw new Error('Not signed in');
       if (DEV_WALLET) {
         // Local development: the test wallet pays its own gas.
@@ -27,10 +27,16 @@ export function useSponsoredExecute() {
         await queryClient.invalidateQueries();
         return done!.digest;
       }
-      const digest = await executeSponsored(client, tx, account.address, async (bytes) => {
-        const signed = await dAppKit.signTransaction({ transaction: bytes });
-        return { signature: signed.signature };
-      });
+      const digest = await executeSponsored(
+        client,
+        tx,
+        account.address,
+        async (bytes) => {
+          const signed = await dAppKit.signTransaction({ transaction: bytes });
+          return { signature: signed.signature };
+        },
+        opts?.recipient,
+      );
       await queryClient.invalidateQueries();
       return digest;
     },

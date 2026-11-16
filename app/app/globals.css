@@ -71,6 +71,7 @@ input, select, textarea {
 .small { font-size: 0.85rem; }
 .mono { font-family: ui-monospace, monospace; word-break: break-all; }
 .error { color: var(--red); }
+.ok { color: var(--green); }
 .warn { color: var(--amber); }
 .center { text-align: center; padding: 40px 0; }
 
